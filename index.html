@@ -1,86 +1,145 @@
 <!DOCTYPE html>
 <html lang="az">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <head>
     <meta charset="UTF-8">
-    <title>Elcan AI Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ELCAN AI - Mobile Ready</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; display: flex; justify-content: center; padding: 20px; }
-        #chat-container { width: 400px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
-        #messages { height: 450px; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        /* CSS RESET */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* Bot Mesaj Stili */
-        .bot-msg { display: flex; align-items: flex-start; gap: 10px; }
-        .bot-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; }
-        .bot-text { background: #eee; padding: 10px 15px; border-radius: 15px 15px 15px 0; max-width: 75%; font-size: 14px; }
-        .bot-name { font-size: 11px; color: #777; margin-bottom: 2px; display: block; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: #f0f2f5; 
+            display: flex; 
+            justify-content: center; 
+            height: 100dvh; /* Dinamik hündürlük */
+        }
+        
+        #chat-container { 
+            width: 100%; 
+            max-width: 600px; 
+            background: white; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; /* Ekranı tam tutur */
+        }
 
-        /* İstifadəçi Mesaj Stili */
-        .user-msg { align-self: flex-end; background: #2c3e50; color: white; padding: 10px 15px; border-radius: 15px 15px 0 15px; max-width: 75%; font-size: 14px; }
+        /* HEADER - Tətbiq havası vermək üçün */
+        header {
+            padding: 15px;
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
         
-        #input-area { display: flex; padding: 15px; border-top: 1px solid #eee; }
-        input { flex: 1; border: 1px solid #ddd; border-radius: 20px; padding: 10px 15px; outline: none; }
-        button { background: #2c3e50; color: white; border: none; padding: 10px 20px; border-radius: 20px; margin-left: 10px; cursor: pointer; }
+        #messages { 
+            flex-grow: 1; /* Qalan bütün boşluğu bura tutur */
+            overflow-y: auto; 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px;
+            background: #f9f9f9;
+        }
+        
+        /* BOT MESAJI */
+        .bot-msg { display: flex; align-items: flex-start; gap: 8px; animation: fadeIn 0.3s; }
+        .bot-img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #ddd; }
+        .bot-content { max-width: 85%; }
+        .bot-name { font-size: 10px; color: #888; margin-left: 2px; }
+        .bot-text { background: #ffffff; padding: 10px 14px; border-radius: 4px 18px 18px 18px; font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+        /* İSTİFADƏÇİ MESAJI */
+        .user-msg { 
+            align-self: flex-end; 
+            background: #2c3e50; 
+            color: white; 
+            padding: 10px 14px; 
+            border-radius: 18px 18px 4px 18px; 
+            max-width: 85%; 
+            font-size: 15px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* GİRİŞ SAHƏSİ */
+        #input-area { 
+            padding: 10px 15px; 
+            display: flex; 
+            align-items: center;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            background: white;
+            padding-bottom: env(safe-area-inset-bottom, 15px); /* iPhone alt barı üçün */
+        }
+        
+        input { 
+            flex: 1; 
+            border: 1px solid #e0e0e0; 
+            border-radius: 20px; 
+            padding: 12px 18px; 
+            outline: none; 
+            font-size: 16px; /* Mobil yaxınlaşmanın qarşısını alır */
+            background: #f8f9fa;
+        }
+        
+        button { 
+            background: #2c3e50; 
+            color: white; 
+            border: none; 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div id="chat-container">
+    <header>ELCAN AI</header>
     <div id="messages"></div>
     <div id="input-area">
-        <input type="text" id="user-input" placeholder="Mesajınızı yazın...">
-        <button onclick="sendMessage()">Göndər</button>
+        <input type="text" id="user-input" placeholder="Mesaj yazın..." autocomplete="off">
+        <button onclick="sendMessage()">➤</button>
     </div>
 </div>
 
 <script>
-    const API_KEY = "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"; // BURA DİQQƏT!
-
+    // Qeyd: Bu JS hissəsində API_KEY yoxdur! 
+    // Sən mütləq arxada Node.js serverini (server.js) işlətməlisən.
     async function sendMessage() {
         const input = document.getElementById("user-input");
-        const msg = input.value;
+        const msg = input.value.trim();
         if (!msg) return;
 
         const msgDiv = document.getElementById("messages");
-        
-        // 1. İstifadəçi mesajını ekrana əlavə et
         msgDiv.innerHTML += `<div class="user-msg">${msg}</div>`;
         input.value = "";
         msgDiv.scrollTop = msgDiv.scrollHeight;
 
-        // 2. Süni zəkaya sorğu göndər
         try {
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            // Sənin serverinin linki (məsələn localhost və ya hosting linki)
+            const response = await fetch("http://localhost:3000/api/chat", {
                 method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    "model": "google/gemini-2.0-flash-001",
-                    "messages": [{"role": "user", "content": msg}]
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: msg })
             });
 
             const data = await response.json();
-            const reply = data.choices[0].message.content;
-
-            // 3. Botun cavabını (Şəkil və Ad ilə) ekrana əlavə et
+            
             msgDiv.innerHTML += `
                 <div class="bot-msg">
                     <img src="https://i.ibb.co/Qv94MBvB/image.png" class="bot-img">
-                    <div>
-                        <span class="bot-name">ELCAN Aİ</span>
-                        <div class="bot-text">${reply}</div>
+                    <div class="bot-content">
+                        <span class="bot-name">ELCAN AI</span>
+                        <div class="bot-text">${data.reply}</div>
                     </div>
                 </div>`;
-            msgDiv.scrollTop = msgDiv.scrollHeight;
-
-        } catch (error) {
-            console.error("Xəta baş verdi:", error);
-        }
-    }
-</script>
-
-</body>
-</html>
