@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="az">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+    <meta charset="UTF-8">
+    <title>Bozz AI Chat</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; display: flex; justify-content: center; padding: 20px; }
+        #chat-container { width: 400px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
+        #messages { height: 450px; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* Bot Mesaj Stili */
+        .bot-msg { display: flex; align-items: flex-start; gap: 10px; }
+        .bot-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd; }
+        .bot-text { background: #eee; padding: 10px 15px; border-radius: 15px 15px 15px 0; max-width: 75%; font-size: 14px; }
+        .bot-name { font-size: 11px; color: #777; margin-bottom: 2px; display: block; }
+
+        /* İstifadəçi Mesaj Stili */
+        .user-msg { align-self: flex-end; background: #2c3e50; color: white; padding: 10px 15px; border-radius: 15px 15px 0 15px; max-width: 75%; font-size: 14px; }
+        
+        #input-area { display: flex; padding: 15px; border-top: 1px solid #eee; }
+        input { flex: 1; border: 1px solid #ddd; border-radius: 20px; padding: 10px 15px; outline: none; }
+        button { background: #2c3e50; color: white; border: none; padding: 10px 20px; border-radius: 20px; margin-left: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="chat-container">
+    <div id="messages"></div>
+    <div id="input-area">
+        <input type="text" id="user-input" placeholder="Mesajınızı yazın...">
+        <button onclick="sendMessage()">Göndər</button>
+    </div>
+</div>
+
+<script>
+    const API_KEY = "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"; // BURA DİQQƏT!
+
+    async function sendMessage() {
+        const input = document.getElementById("user-input");
+        const msg = input.value;
+        if (!msg) return;
+
+        const msgDiv = document.getElementById("messages");
+        
+        // 1. İstifadəçi mesajını ekrana əlavə et
+        msgDiv.innerHTML += `<div class="user-msg">${msg}</div>`;
+        input.value = "";
+        msgDiv.scrollTop = msgDiv.scrollHeight;
+
+        // 2. Süni zəkaya sorğu göndər
+        try {
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    "model": "google/gemini-2.0-flash-001",
+                    "messages": [{"role": "user", "content": msg}]
+                })
+            });
+
+            const data = await response.json();
+            const reply = data.choices[0].message.content;
+
+            // 3. Botun cavabını (Şəkil və Ad ilə) ekrana əlavə et
+            msgDiv.innerHTML += `
+                <div class="bot-msg">
+                    <img src="https://i.ibb.co/Qv94MBvB/image.png" class="bot-img">
+                    <div>
+                        <span class="bot-name">ELCAN Aİ</span>
+                        <div class="bot-text">${reply}</div>
+                    </div>
+                </div>`;
+            msgDiv.scrollTop = msgDiv.scrollHeight;
+
+        } catch (error) {
+            console.error("Xəta baş verdi:", error);
+        }
+    }
+</script>
+
+</body>
+</html>
