@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(cors());
 
 // Sənin gizli açarın buradadır (İstifadəçi bunu görmür)
-const API_KEY = "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";
+const API_KEY = "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";
 
 app.post('/api/chat', async (req, res) => {
     try {
