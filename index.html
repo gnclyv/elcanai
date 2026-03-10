@@ -70,9 +70,9 @@
             display: flex; 
             align-items: center;
             gap: 10px;
-            border-top: 1px solid #eee;
+            border-top: 4px solid #eee;
             background: white;
-            padding-bottom: env(safe-area-inset-bottom, 15px); /* iPhone alt barı üçün */
+            bottom: 25px; /* iPhone alt barı üçün */
         }
         
         input { 
@@ -143,3 +143,16 @@
                         <div class="bot-text">${data.reply}</div>
                     </div>
                 </div>`;
+            msgDiv.scrollTop = msgDiv.scrollHeight;
+        } catch (error) {
+            console.error("Serverlə əlaqə kəsildi.");
+        }
+    }
+
+    // Enter düyməsi ilə göndərmək üçün
+    document.getElementById("user-input").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") sendMessage();
+    });
+</script>
+</body>
+</html>
